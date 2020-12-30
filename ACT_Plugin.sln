@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACT_Plugin", "ACT_Plugin.csproj", "{1749AF3B-F485-4EA5-9F25-6C8805501A02}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standalone", "Standalone", "{EF350FC5-B1F9-4382-8D4C-4BB7EE4CA452}"
+	ProjectSection(SolutionItems) = preProject
+		Standalone\ACT_English_Parser.cs = Standalone\ACT_English_Parser.cs
+		Standalone\ACT_EnJp_Parser.cs = Standalone\ACT_EnJp_Parser.cs
+		Standalone\ACT_German_Parser.cs = Standalone\ACT_German_Parser.cs
+		Standalone\ACT_Russian_Parser.cs = Standalone\ACT_Russian_Parser.cs
+		Standalone\AssemblyInfo.cs = Standalone\AssemblyInfo.cs
+		Standalone\Auto_Attack.cs = Standalone\Auto_Attack.cs
+		Standalone\Clip_Share.cs = Standalone\Clip_Share.cs
+		Standalone\CompanionLogSetup.cs = Standalone\CompanionLogSetup.cs
+		Standalone\DetrimentCallMacro.cs = Standalone\DetrimentCallMacro.cs
+		Standalone\Distance.cs = Standalone\Distance.cs
+		Standalone\DPS_Title.cs = Standalone\DPS_Title.cs
+		Standalone\DTakenPSCalcs.cs = Standalone\DTakenPSCalcs.cs
+		Standalone\EncTrimSilence.cs = Standalone\EncTrimSilence.cs
+		Standalone\Export_All.cs = Standalone\Export_All.cs
+		Standalone\Harvesting.cs = Standalone\Harvesting.cs
+		Standalone\LootParsing.cs = Standalone\LootParsing.cs
+		Standalone\Notifications.cs = Standalone\Notifications.cs
+		Standalone\PluginMain.cs = Standalone\PluginMain.cs
+		Standalone\PluginSample.cs = Standalone\PluginSample.cs
+		Standalone\README.md = Standalone\README.md
+		sample.cs = sample.cs
+		Standalone\Talking_DPS.cs = Standalone\Talking_DPS.cs
+		Standalone\TimerMods.cs = Standalone\TimerMods.cs
+		Standalone\TimerRepeatPlugin.cs = Standalone\TimerRepeatPlugin.cs
+		Standalone\XmlShareServer.cs = Standalone\XmlShareServer.cs
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1749AF3B-F485-4EA5-9F25-6C8805501A02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1749AF3B-F485-4EA5-9F25-6C8805501A02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1749AF3B-F485-4EA5-9F25-6C8805501A02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1749AF3B-F485-4EA5-9F25-6C8805501A02}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F009E9C6-01EE-4FBD-B820-23773D9CDC4F}
+	EndGlobalSection
+EndGlobal
