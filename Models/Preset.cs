@@ -5,6 +5,24 @@
     /// </summary>
     public class Preset
     {
+        public Preset()
+        {
+        }
+
+        public static Preset Reset;
+        static Preset()
+        {
+            Reset = new Preset();
+            Reset.A = new Waymark(0, 0, 0, 0, false);
+            Reset.B = new Waymark(0, 0, 0, 0, false);
+            Reset.C = new Waymark(0, 0, 0, 0, false);
+            Reset.D = new Waymark(0, 0, 0, 0, false);
+            Reset.One = new Waymark(0, 0, 0, 0, false);
+            Reset.Two = new Waymark(0, 0, 0, 0, false);
+            Reset.Three = new Waymark(0, 0, 0, 0, false);
+            Reset.Four = new Waymark(0, 0, 0, 0, false);
+        }
+
         /// <summary>
         /// Name of this preset.
         /// </summary>
@@ -24,6 +42,8 @@
         public Waymark D { get; set; }
         public Waymark One { get; set; }
         public Waymark Two { get; set; }
+        public Waymark Three { get; set; }
+        public Waymark Four { get; set; }
 
         /// <summary>
         /// Property Changed event handler for this model.

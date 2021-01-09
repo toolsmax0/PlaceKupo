@@ -6,6 +6,27 @@ namespace PlaceKupo.Models
     /// </summary>
     public class Waymark
     {
+        public Waymark()
+        {
+        }
+
+        public Waymark(Point point,WaymarkID iD, bool active)
+        {
+            X = point.X;
+            Y = point.Y;
+            Z = point.Z;
+            ID = iD;
+            Active = active;
+        }
+
+        public Waymark(float x, float y, float z, WaymarkID iD, bool active)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            ID = iD;
+            Active = active;
+        }
 
         /// <summary>
         /// X Coordinate of Waymark.
@@ -52,5 +73,5 @@ namespace PlaceKupo.Models
     /// <summary>
     /// Waymark ID is the byte value of the waymark ID in memory.
     /// </summary>
-    public enum WaymarkID : byte { A = 0, B, C, D, One, Two }
+    public enum WaymarkID : byte { A = 0, B, C, D, One, Two, Three, Four }
 }
