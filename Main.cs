@@ -82,10 +82,17 @@ namespace PlaceKupo
         /// <param name="preset">一套标点</param>
         public static void WriteWaymark(Preset preset)
         {
-            var s = JsonConvert.SerializeObject(preset);
-            var data = new StringContent(s, System.Text.Encoding.ASCII, "application/json");
-            var res = client.PostAsync(namazu + "place", data);
-            res.Result.Content.ReadAsStringAsync();
+            try
+            {
+                var s = JsonConvert.SerializeObject(preset);
+                var data = new StringContent(s, System.Text.Encoding.ASCII, "application/json");
+                var res = client.PostAsync(namazu + "place", data);
+                res.Result.Content.ReadAsStringAsync();
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+            }
         }
 
         /// <summary>
@@ -117,7 +124,24 @@ namespace PlaceKupo
         {
             Logger.Items.Add(String.Format("[{0:HH:mm:ss}] ", DateTime.Now) + s);
             Logger.SelectedIndex = Logger.Items.Count - 1;
-            Logger.SelectedIndex =  - 1;
+            Logger.SelectedIndex = -1;
+        }
+
+        /// <summary>
+        /// 使用TTS朗读一句文字。
+        /// </summary>
+        /// <param name="s"></param>
+        public static void TTS(string s)
+        {
+            try
+            {
+                ActGlobals.oFormActMain.TTS(s);
+                Log("TTS: " + s);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+            }
         }
 
         #region 其它
@@ -166,7 +190,7 @@ namespace PlaceKupo
             statusLabel.Text = "Working :D";
             Log("库啵标点已启动");
             uint id = repository.GetCurrentTerritoryID();
-            Log("当前区域ID: "+id.ToString());
+            Log("当前区域ID: " + id.ToString());
             if (map.ContainsKey(id))
             {
                 area = map[id]();

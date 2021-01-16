@@ -1,5 +1,4 @@
-﻿
-namespace PlaceKupo.Models
+﻿namespace PlaceKupo.Models
 {
     /// <summary>
     /// Waymark Model prepresents the data behind a Waymark.
@@ -10,7 +9,7 @@ namespace PlaceKupo.Models
         {
         }
 
-        public Waymark(Point point,WaymarkID iD, bool active)
+        public Waymark(Point point, WaymarkID iD, bool active)
         {
             X = point.X;
             Y = point.Y;

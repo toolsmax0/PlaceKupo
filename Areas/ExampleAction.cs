@@ -1,11 +1,12 @@
 ﻿using Advanced_Combat_Tracker;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace PlaceKupo.Areas
 {
     public class ExampleAction : IPlaceFunc
     {
+        private FFXIV_ACT_Plugin.Common.Models.Combatant cmb;
+
         void IPlaceFunc.AddDelegates()
         {
             ActGlobals.oFormActMain.BeforeLogLineRead += HelloWorld;
@@ -16,13 +17,14 @@ namespace PlaceKupo.Areas
         /// </summary>
         /// <param name="isImport"></param>
         /// <param name="logInfo"></param>
-        void HelloWorld(bool isImport, LogLineEventArgs logInfo)
+        private void HelloWorld(bool isImport, LogLineEventArgs logInfo)
         {
             string log = logInfo.logLine;//ACT日志行
             if (Regex.IsMatch(log, "^.{14} 00:001d:.*?木人"))
             {
                 PlaceKupo.SendCommand("/e Hello World!");
                 PlaceKupo.Log("Hello World!");
+                PlaceKupo.SendCommand("/e " + cmb.PosX.ToString());
             }
         }
 

@@ -10,6 +10,7 @@
         }
 
         public static Preset Reset;
+
         static Preset()
         {
             Reset = new Preset();
@@ -37,6 +38,7 @@
         /// Waymark values for all of every waymark in the game.
         /// </summary>
         public Waymark A { get; set; }
+
         public Waymark B { get; set; }
         public Waymark C { get; set; }
         public Waymark D { get; set; }
