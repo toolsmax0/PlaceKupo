@@ -1,20 +1,17 @@
 using Advanced_Combat_Tracker;
 using FFXIV_ACT_Plugin.Common;
-using Newtonsoft.Json;
 using PlaceKupo.Areas;
-using PlaceKupo.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Xml;
+using Zodiark.Namazu;
 
 [assembly: AssemblyTitle("库啵标点")]
 [assembly: AssemblyDescription("在场地上标明安全点等提示")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
 
 namespace PlaceKupo
 {
@@ -29,22 +26,30 @@ namespace PlaceKupo
     {
         #region 其它变量
 
-        private static HttpClient client;
-        private Label label1;
-        private static string namazu;
-        private TextBox portbox;
-        private readonly string settingsFile = Path.Combine(ActGlobals.oFormActMain.AppDataFolder.FullName, "Config\\PluginSample.config.xml");
         private Label statusLabel;
-        private SettingsSerializer xmlSettings;
+
+        //private static Offsets Offsets;
         private IPlaceFunc area;
-        public static IDataSubscription subscription;
-        public static IDataRepository repository;
+
         public static ListBox Logger;
-        private Panel panel1;
         private Panel panel2;
         public ListBox LogList;
+        public static Regex Wipe = new Regex(@"^.{14} 21:.{8}:4000001[026]", RegexOptions.Compiled);
+        private static Namazu Namazu;
+        private Button CopyAll;
+        private Button ClearAll;
 
         #endregion 其它变量
+
+        /// <summary>
+        /// 网络事件
+        /// </summary>
+        public static IDataSubscription subscription;
+
+        /// <summary>
+        /// 获取玩家信息等
+        /// </summary>
+        public static IDataRepository repository;
 
         /// <summary>
         /// 存储区域和对应的标点方法
@@ -55,12 +60,16 @@ namespace PlaceKupo
         {
             map = new Dictionary<uint, Func<IPlaceFunc>>
             {
-                //要添加新的方法,请按照 {区域ID,() => new 类名()} 的规范添加,例:
+                //方法请在PlaceKupo.Areas中实现
+                //要添加新的方法,请按照 {区域ID,() => new 类名()} 的规范添加
                 //区域ID可在此地址查询: https://github.com/quisquous/cactbot/blob/main/resources/zone_info.js
                 //另外在安装此插件后切换区域时也会在聊天框显示区域ID
-                //例:盛夏农庄
                 //自定义类请实现IPlaceFunc接口
+                //例:盛夏农庄
                 { 134, () => new ExampleAction() },
+#if DEBUG
+                { 928, () => new Bunker() },
+#endif
                 { 917, () => new Bunker() }
             };
         }
@@ -71,23 +80,9 @@ namespace PlaceKupo
         /// <param name="s">一条游戏内指令</param>
         public static void SendCommand(string s)
         {
-            var data = new StringContent(s, System.Text.Encoding.UTF8, "application/json");
-            var res = client.PostAsync(namazu + "command", data);
-            res.Result.Content.ReadAsStringAsync();
-        }
-
-        /// <summary>
-        /// 向游戏内写入标点数据
-        /// </summary>
-        /// <param name="preset">一套标点</param>
-        public static void WriteWaymark(Preset preset)
-        {
             try
             {
-                var s = JsonConvert.SerializeObject(preset);
-                var data = new StringContent(s, System.Text.Encoding.ASCII, "application/json");
-                var res = client.PostAsync(namazu + "place", data);
-                res.Result.Content.ReadAsStringAsync();
+                Namazu.SendCommand(s);
             }
             catch (Exception e)
             {
@@ -98,22 +93,17 @@ namespace PlaceKupo
         /// <summary>
         /// 向游戏内写入标点数据
         /// </summary>
-        /// <param name="marks">一组标点</param>
-        public static void WriteWaymark(Waymark[] marks)
+        /// <param name="preset">一套标点</param>
+        public static void WriteWaymark(Preset preset)
         {
-            Array.Resize(ref marks, 8);
-            Preset preset = new Preset
+            try
             {
-                A = marks[0],
-                B = marks[1],
-                C = marks[2],
-                D = marks[3],
-                One = marks[4],
-                Two = marks[5],
-                Three = marks[6],
-                Four = marks[7]
-            };
-            WriteWaymark(preset);
+                Namazu.WriteWaymark(preset);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+            }
         }
 
         /// <summary>
@@ -133,10 +123,19 @@ namespace PlaceKupo
         /// <param name="s"></param>
         public static void TTS(string s)
         {
+            ActGlobals.oFormActMain.TTS(s);
+            Log("TTS: " + s);
+        }
+
+        /// <summary>
+        /// 写入单个标点
+        /// </summary>
+        /// <param name="waymark">标点数据</param>
+        public static void WriteWaymark(Waymark waymark, int id = -1)
+        {
             try
             {
-                ActGlobals.oFormActMain.TTS(s);
-                Log("TTS: " + s);
+                Namazu.WriteWaymark(waymark, id);
             }
             catch (Exception e)
             {
@@ -150,7 +149,6 @@ namespace PlaceKupo
         {
             if (subscription != null)
                 return subscription;
-
             var FFXIV = ActGlobals.oFormActMain.ActPlugins.FirstOrDefault(x => x.lblPluginTitle.Text == "FFXIV_ACT_Plugin.dll");
             if (FFXIV != null && FFXIV.pluginObj != null)
             {
@@ -158,6 +156,27 @@ namespace PlaceKupo
             }
 
             return subscription;
+        }
+
+        private IDataRepository GetRepository()
+        {
+            if (repository != null)
+                return repository;
+
+            var FFXIV = ActGlobals.oFormActMain.ActPlugins.FirstOrDefault(x => x.lblPluginTitle.Text == "FFXIV_ACT_Plugin.dll");
+            if (FFXIV != null && FFXIV.pluginObj != null)
+            {
+                try
+                {
+                    repository = (IDataRepository)FFXIV.pluginObj.GetType().GetProperty("DataRepository").GetValue(FFXIV.pluginObj);
+                }
+                catch (Exception ex)
+                {
+                    Log(ex.ToString());
+                }
+            }
+
+            return repository;
         }
 
         public PlaceKupo()
@@ -171,23 +190,20 @@ namespace PlaceKupo
             if (area != null)
                 area.RemoveDelegates();
             subscription.ZoneChanged -= OnZoneChanged;
-            SaveSettings();
             statusLabel.Text = "插件已退出";
         }
 
         public void InitPlugin(TabPage pluginScreenSpace, Label pluginStatusText)
         {
             pluginScreenSpace.Text = "库啵标点工具";
-            client = new HttpClient();
             GetSubscription();
             GetRepository();
             InitMap();
-            xmlSettings = new SettingsSerializer(this);
-            LoadSettings();
             pluginScreenSpace.Controls.Add(this);
             subscription.ZoneChanged += OnZoneChanged;
             statusLabel = pluginStatusText;
             statusLabel.Text = "Working :D";
+            Namazu = new Namazu();
             Log("库啵标点已启动");
             uint id = repository.GetCurrentTerritoryID();
             Log("当前区域ID: " + id.ToString());
@@ -201,33 +217,12 @@ namespace PlaceKupo
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlaceKupo));
-            this.label1 = new System.Windows.Forms.Label();
-            this.portbox = new System.Windows.Forms.TextBox();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.LogList = new System.Windows.Forms.ListBox();
-            this.panel1.SuspendLayout();
+            this.CopyAll = new System.Windows.Forms.Button();
+            this.ClearAll = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
-            //
-            // label1
-            //
-            resources.ApplyResources(this.label1, "label1");
-            this.label1.Name = "label1";
-            //
-            // portbox
-            //
-            resources.ApplyResources(this.portbox, "portbox");
-            this.portbox.Name = "portbox";
-            this.portbox.TextChanged += new System.EventHandler(this.Portbox_TextChanged);
-            this.portbox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Portbox_KeyPress);
-            //
-            // panel1
-            //
-            resources.ApplyResources(this.panel1, "panel1");
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.portbox);
-            this.panel1.Name = "panel1";
             //
             // panel2
             //
@@ -242,48 +237,30 @@ namespace PlaceKupo
             this.LogList.Name = "LogList";
             this.LogList.DoubleClick += new System.EventHandler(this.LogList_DoubleClick);
             //
+            // CopyAll
+            //
+            resources.ApplyResources(this.CopyAll, "CopyAll");
+            this.CopyAll.Name = "CopyAll";
+            this.CopyAll.UseVisualStyleBackColor = true;
+            this.CopyAll.Click += new System.EventHandler(this.CopyAll_Click);
+            //
+            // ClearAll
+            //
+            resources.ApplyResources(this.ClearAll, "ClearAll");
+            this.ClearAll.Name = "ClearAll";
+            this.ClearAll.UseVisualStyleBackColor = true;
+            this.ClearAll.Click += new System.EventHandler(this.ClearAll_Click);
+            //
             // PlaceKupo
             //
             resources.ApplyResources(this, "$this");
+            this.Controls.Add(this.ClearAll);
+            this.Controls.Add(this.CopyAll);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
             this.Name = "PlaceKupo";
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-        }
-
-        private void LoadSettings()
-        {
-            // Add any controls you want to save the state of
-            xmlSettings.AddControlSetting(portbox.Name, portbox);
-
-            if (File.Exists(settingsFile))
-            {
-                FileStream fs = new FileStream(settingsFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                XmlTextReader xReader = new XmlTextReader(fs);
-
-                try
-                {
-                    while (xReader.Read())
-                    {
-                        if (xReader.NodeType == XmlNodeType.Element)
-                        {
-                            if (xReader.LocalName == "SettingsSerializer")
-                            {
-                                xmlSettings.ImportFromXml(xReader);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    statusLabel.Text = "Error loading settings: " + ex.Message;
-                }
-                xReader.Close();
-            }
         }
 
         private void OnZoneChanged(uint id, string name)
@@ -315,27 +292,6 @@ namespace PlaceKupo
 
         private void Portbox_TextChanged(object sender, EventArgs e)
         {
-            namazu = String.Format("http://localhost:{0}/", portbox.Text);
-        }
-
-        private void SaveSettings()
-        {
-            FileStream fs = new FileStream(settingsFile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            XmlTextWriter xWriter = new XmlTextWriter(fs, System.Text.Encoding.UTF8)
-            {
-                Formatting = System.Xml.Formatting.Indented,
-                Indentation = 1,
-                IndentChar = '\t'
-            };
-            xWriter.WriteStartDocument(true);
-            xWriter.WriteStartElement("Config");    // <Config>
-            xWriter.WriteStartElement("SettingsSerializer");    // <Config><SettingsSerializer>
-            xmlSettings.ExportToXml(xWriter);   // Fill the SettingsSerializer XML
-            xWriter.WriteEndElement();  // </SettingsSerializer>
-            xWriter.WriteEndElement();  // </Config>
-            xWriter.WriteEndDocument(); // Tie up loose ends (shouldn't be any)
-            xWriter.Flush();    // Flush the file buffer to disk
-            xWriter.Close();
         }
 
         private void LogList_DoubleClick(object sender, EventArgs e)
@@ -343,25 +299,19 @@ namespace PlaceKupo
             Clipboard.SetDataObject(LogList.SelectedItem);
         }
 
-        private IDataRepository GetRepository()
+        private void CopyAll_Click(object sender, EventArgs e)
         {
-            if (repository != null)
-                return repository;
-
-            var FFXIV = ActGlobals.oFormActMain.ActPlugins.FirstOrDefault(x => x.lblPluginTitle.Text == "FFXIV_ACT_Plugin.dll");
-            if (FFXIV != null && FFXIV.pluginObj != null)
+            var list = new List<object>();
+            foreach (var i in LogList.Items)
             {
-                try
-                {
-                    repository = (IDataRepository)FFXIV.pluginObj.GetType().GetProperty("DataRepository").GetValue(FFXIV.pluginObj);
-                }
-                catch (Exception ex)
-                {
-                    Log(ex.ToString());
-                }
+                list.Add(i);
             }
+            Clipboard.SetDataObject(string.Join("\n", list));
+        }
 
-            return repository;
+        private void ClearAll_Click(object sender, EventArgs e)
+        {
+            LogList.Items.Clear();
         }
 
         #endregion 其它
