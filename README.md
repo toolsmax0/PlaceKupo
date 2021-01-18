@@ -20,15 +20,15 @@
 
 * `Advanced Combat Tracker.dll` 可在ACT根目录找到
 * `FFXIV_ACT_Plugin.Common.dll` 可在[解析插件发布页](https://github.com/ravahn/FFXIV_ACT_Plugin/tree/master/Releases)下载SDK并解压后得到
-* `Zodiark.Namazu.dll` [下载](https://github.com/PrototypeSeiren/Zodiark)并手动编译
-* 其余引用项可在Nuget中安装
+* `Zodiark.Namazu.dll` [下载](https://github.com/PrototypeSeiren/Zodiark)并手动编译  
+  其余引用项可在Nuget中安装
 
 ### 模型
 
 * `Zodiark.Namazu.Point` 三维坐标系上的一点
 * `Zodiark.Namazu.Preset` 标点预设
-* `Zodiark.Namazu.Waymark` 单个标点
-* 详细信息可参考源码
+* `Zodiark.Namazu.Waymark` 单个标点  
+  详细信息可参考源码
 
 ### 实现
 
