@@ -49,3 +49,4 @@
 * `PlaceKupo.TTS(string)` 文字转语音
 * `PlaceKupo.WriteWaymark(Zodiark.Namazu.Preset)` 写入一套标点预设
 * `PlaceKupo.WriteWaymark(Zodiark.Namazu.Waymark, int)` 写入单个标点
+* `PlaceKupo.ReadWaymark()`读取游戏内标点

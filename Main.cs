@@ -11,7 +11,7 @@ using Zodiark.Namazu;
 
 [assembly: AssemblyTitle("库啵标点")]
 [assembly: AssemblyDescription("在场地上标明安全点等提示")]
-[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.1.1.0")]
 
 namespace PlaceKupo
 {
@@ -140,6 +140,22 @@ namespace PlaceKupo
             catch (Exception e)
             {
                 Log(e.ToString());
+            }
+        }
+        /// <summary>
+        /// 读取游戏内的标点
+        /// </summary>
+        /// <returns>游戏内的标点预设</returns>
+        public static Preset ReadWaymark()
+        {
+            try
+            {
+                return Namazu.ReadWaymark();
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                return Preset.Reset;
             }
         }
 
