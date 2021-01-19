@@ -15,7 +15,8 @@
 
 ![GIF 2021-1-18 22-42-30.gif](https://i.loli.net/2021/01/18/5G48NWIu3rnYCoi.gif)
 
-激光结束之后标点会自动消失
+激光判定之后标点会自动消失，换言之，如果标点消失了你还没跑到安全点，那么
+![を前はも死んだ](https://i.loli.net/2021/01/20/ek4coRnDaryHImz.jpg)
 
 我们再来看看第二次和第三次激光：
 
@@ -24,9 +25,13 @@
 ![GIF 2021-1-18 22-44-59.gif](https://i.loli.net/2021/01/18/3AZ5Y9ozNSWRvr4.gif)
 ![GIF 2021-1-18 22-46-14.gif](https://i.loli.net/2021/01/18/IbEnfaFdgs1KZBu.gif)
 
-虽然比起来手动判断可能会慢一点，不过足够跑到安全点了，可以救急用。
+虽然比起来手动判断可能会慢一点，但是足够跑到安全点了，可以救急用。
 
-不过2P的传送激光比起这个来更难判断，所以轮椅就更有用武之地了：
+不过你可能会想，这个机制也不算太难啊，有必要为了它专门写个轮椅吗？
+你说得对，上面不过是一个实验品，真正的重头戏还在下面！为什么呢？
+曾经在艾欧泽亚有一位绝*战士，他在5.3版本刚更新的夜里终于进入了尼尔2本。那么这位四十分钟之后就因为拉错了boss位置带着20个人吃了两层激光从而“名留青史”的传奇坦克究竟是谁呢？~~そう、私です！~~
+
+说到这里想必大家已经可以理解这个轮椅的重要之处了。在5.3更新了两个月之后我终于把它写完了。让我们来看看演示。
 
 ![GIF 2021-1-18 22-47-00.gif](https://i.loli.net/2021/01/18/vQLOegqUNGPnFXC.gif)
 
@@ -40,7 +45,7 @@
 
 [![GitHub all releases](https://img.shields.io/github/downloads/toolsmax0/PlaceKupo/total)](https://github.com/toolsmax0/PlaceKupo/releases)
 
-下载之后在ACT插件列表中添加即可。注意该插件必须在游戏启动后运行。
+下载之后在ACT插件列表中添加即可。~~注意该插件必须在游戏启动后运行。~~ 考虑到有的选手需要左手伐绝亚右手绝巴哈，我们特地添加了进程转换功能，再也不用担心双线程打本的时候只有一边有轮椅啦！顺便一提，有了这个功能之后就不需要先打开游戏再加载插件了。
 
 ## 开发
 
@@ -51,3 +56,7 @@
 
 感谢@PrototypeSeiren [![GitHub followers](https://img.shields.io/github/followers/PrototypeSeiren?style=social)](https://github.com/PrototypeSeiren)
 提供的莫迪翁传送器以及各位好兄弟的测试反馈。
+
+## 安利
+
+欢迎加入莫迪翁狱友会:868116069
