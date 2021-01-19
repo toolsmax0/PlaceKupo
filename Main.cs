@@ -219,7 +219,7 @@ namespace PlaceKupo
             subscription.ZoneChanged += OnZoneChanged;
             statusLabel = pluginStatusText;
             statusLabel.Text = "Working :D";
-            Namazu = new Namazu();
+            Namazu = Namazu.Instance;
             Log("库啵标点已启动");
             uint id = repository.GetCurrentTerritoryID();
             Log("当前区域ID: " + id.ToString());
