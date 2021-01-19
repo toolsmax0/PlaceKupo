@@ -3,7 +3,7 @@ using FFXIV_ACT_Plugin.Common;
 using PlaceKupo.Areas;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -11,7 +11,7 @@ using Zodiark.Namazu;
 
 [assembly: AssemblyTitle("库啵标点")]
 [assembly: AssemblyDescription("在场地上标明安全点等提示")]
-[assembly: AssemblyVersion("1.1.1.0")]
+[assembly: AssemblyVersion("1.1.2.0")]
 
 namespace PlaceKupo
 {
@@ -44,12 +44,12 @@ namespace PlaceKupo
         /// <summary>
         /// 网络事件
         /// </summary>
-        public static IDataSubscription subscription;
+        public static IDataSubscription subscription = Namazu.subscription;
 
         /// <summary>
         /// 获取玩家信息等
         /// </summary>
-        public static IDataRepository repository;
+        public static IDataRepository repository = Namazu.repository;
 
         /// <summary>
         /// 存储区域和对应的标点方法
@@ -142,6 +142,7 @@ namespace PlaceKupo
                 Log(e.ToString());
             }
         }
+
         /// <summary>
         /// 读取游戏内的标点
         /// </summary>
@@ -161,40 +162,6 @@ namespace PlaceKupo
 
         #region 其它
 
-        private IDataSubscription GetSubscription()
-        {
-            if (subscription != null)
-                return subscription;
-            var FFXIV = ActGlobals.oFormActMain.ActPlugins.FirstOrDefault(x => x.lblPluginTitle.Text == "FFXIV_ACT_Plugin.dll");
-            if (FFXIV != null && FFXIV.pluginObj != null)
-            {
-                subscription = (IDataSubscription)FFXIV.pluginObj.GetType().GetProperty("DataSubscription").GetValue(FFXIV.pluginObj);
-            }
-
-            return subscription;
-        }
-
-        private IDataRepository GetRepository()
-        {
-            if (repository != null)
-                return repository;
-
-            var FFXIV = ActGlobals.oFormActMain.ActPlugins.FirstOrDefault(x => x.lblPluginTitle.Text == "FFXIV_ACT_Plugin.dll");
-            if (FFXIV != null && FFXIV.pluginObj != null)
-            {
-                try
-                {
-                    repository = (IDataRepository)FFXIV.pluginObj.GetType().GetProperty("DataRepository").GetValue(FFXIV.pluginObj);
-                }
-                catch (Exception ex)
-                {
-                    Log(ex.ToString());
-                }
-            }
-
-            return repository;
-        }
-
         public PlaceKupo()
         {
             InitializeComponent();
@@ -212,19 +179,18 @@ namespace PlaceKupo
         public void InitPlugin(TabPage pluginScreenSpace, Label pluginStatusText)
         {
             pluginScreenSpace.Text = "库啵标点工具";
-            GetSubscription();
-            GetRepository();
             InitMap();
             pluginScreenSpace.Controls.Add(this);
+            subscription.ProcessChanged += OnProcessChanged;
             subscription.ZoneChanged += OnZoneChanged;
             statusLabel = pluginStatusText;
             statusLabel.Text = "Working :D";
-            Namazu = Namazu.Instance;
             Log("库啵标点已启动");
             uint id = repository.GetCurrentTerritoryID();
             Log("当前区域ID: " + id.ToString());
             if (map.ContainsKey(id))
             {
+                Namazu = Namazu.Instance;
                 area = map[id]();
                 area.AddDelegates();
             }
@@ -299,6 +265,11 @@ namespace PlaceKupo
             {
                 Log(e.ToString());
             }
+        }
+
+        private void OnProcessChanged(Process _)
+        {
+            Namazu = Namazu.Instance;
         }
 
         private void Portbox_KeyPress(object sender, KeyPressEventArgs e)
