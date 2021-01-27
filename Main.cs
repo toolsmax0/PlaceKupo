@@ -82,6 +82,7 @@ namespace PlaceKupo
         {
             try
             {
+                if (Namazu == null) Namazu = Namazu.Instance;
                 Namazu.SendCommand(s);
             }
             catch (Exception e)
@@ -98,6 +99,7 @@ namespace PlaceKupo
         {
             try
             {
+                if (Namazu == null) Namazu = Namazu.Instance;
                 Namazu.WriteWaymark(preset);
             }
             catch (Exception e)
@@ -135,6 +137,7 @@ namespace PlaceKupo
         {
             try
             {
+                if (Namazu == null) Namazu = Namazu.Instance;
                 Namazu.WriteWaymark(waymark, id);
             }
             catch (Exception e)
